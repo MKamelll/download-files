@@ -11,7 +11,7 @@ const urls = arg ? arg : process.exit(1);
 // get the directory
 const directory = process.cwd();
 
-// gets the url and saved file namw  -by default the time now-
+// gets the url and saved file name  -by default the time now-
 // returns a promise that resolves on finish event of writable stream
 async function downloadMedia(url, savedName = new Date().getTime().toString()) {
   const res = await fetch(url);
