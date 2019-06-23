@@ -1,8 +1,8 @@
 // dependencies
-const fs = require('fs');
-const fetch = require('node-fetch');
 const { Bar, Presets } = require('cli-progress');
 const { PassThrough } = require('stream');
+const fetch = require('node-fetch');
+const fs = require('fs');
 
 // parse the terminal arguments and get the url
 const arg = 2 in process.argv ? process.argv.slice(2) : false;
@@ -38,14 +38,21 @@ async function downloadMedia(url, savedName = new Date().getTime().toString()) {
       const fileDownloaded = fs.createWriteStream(fileName);
       // create a pathThrough stream to measure progress
       const updatePbar = new PassThrough();
+      let progressDownload = 0;
       updatePbar.on('data', chunk => {
-        pbar.increment(chunk.length);
+        // add new chunk length to the progress download variable
+        progressDownload += chunk.length;
+        // update the bar with new current value
+        pbar.update(progressDownload);
       });
+      // resolve when the file is written
       fileDownloaded.on('finish', err => {
         if (err) reject(err);
         pbar.stop();
         resolve('file downloaded 🎉');
       });
+      // pipe date from body through the progress bar
+      // and to the file
       body.pipe(updatePbar).pipe(fileDownloaded);
     } else {
       reject('Could not get file extension 😢');
@@ -53,6 +60,7 @@ async function downloadMedia(url, savedName = new Date().getTime().toString()) {
   });
 }
 
+// Iterate through given urls
 for (const url of urls) {
   downloadMedia(url)
     .then(console.log)
