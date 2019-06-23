@@ -18,6 +18,9 @@ async function downloadMedia(url, savedName = new Date().getTime().toString()) {
   const headers = res.headers;
   const fileSize = parseInt(headers.get('Content-Length'));
   const chunkSize = 256 * 1024;
+
+  // extract the file type from content-type header
+  // e.g. images/jpg -> jpg
   const fileExtension = headers.get('Content-Type')
     ? /\/(\w+)/.exec(headers.get('Content-Type'))[1]
     : false;
